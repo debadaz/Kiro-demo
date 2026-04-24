@@ -2,22 +2,23 @@ import { useState } from 'react';
 import type { FieldErrors } from '../../types/login';
 import { validate } from '../../utils/validation';
 import { FormField } from './FormField';
-import { SuccessMessage } from './SuccessMessage';
 import styles from './LoginForm.module.css';
+
+interface LoginFormProps {
+  onLoginSuccess: () => void;
+}
 
 interface LoginFormState {
   username: string;
   password: string;
   errors: FieldErrors;
-  submitted: boolean;
 }
 
-export function LoginForm() {
+export function LoginForm({ onLoginSuccess }: LoginFormProps) {
   const [state, setState] = useState<LoginFormState>({
     username: '',
     password: '',
     errors: {},
-    submitted: false,
   });
 
   function handleChange(field: 'username' | 'password', value: string) {
@@ -35,7 +36,7 @@ export function LoginForm() {
     e.preventDefault();
     const result = validate(state.username, state.password);
     if (result.valid) {
-      setState((prev) => ({ ...prev, submitted: true, errors: {} }));
+      onLoginSuccess();
     } else {
       setState((prev) => ({ ...prev, errors: result.errors }));
     }
@@ -43,7 +44,6 @@ export function LoginForm() {
 
   return (
     <div className={styles.container}>
-      {state.submitted && <SuccessMessage message="Login successful!" />}
       <form onSubmit={handleSubmit} className={styles.form} noValidate>
         <FormField
           id="username"
